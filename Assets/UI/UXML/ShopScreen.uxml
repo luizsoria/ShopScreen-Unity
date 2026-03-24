@@ -1,0 +1,83 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/UI/USS/Common.uss" />
+    <Style src="project://database/Assets/UI/USS/ShopScreen.uss" />
+    <Style src="project://database/Assets/UI/USS/Components/WalletDisplay.uss" />
+    <Style src="project://database/Assets/UI/USS/Components/TabButton.uss" />
+    <Style src="project://database/Assets/UI/USS/Components/ShopItemCard.uss" />
+    <Style src="project://database/Assets/UI/USS/Components/OfferCard.uss" />
+
+    <ui:VisualElement name="shop-screen" class="shop-screen">
+
+        <!-- ===== HEADER ===== -->
+        <ui:VisualElement name="shop-header" class="shop-header">
+            <!-- Left: Title -->
+            <ui:VisualElement name="header-left" class="shop-header__left">
+                <ui:Label name="shop-title" text="SHOP" class="shop-header__title" />
+            </ui:VisualElement>
+
+            <!-- Right: Wallets + Close -->
+            <ui:VisualElement name="header-right" class="shop-header__right">
+                <ui:VisualElement name="wallets-container" class="shop-header__wallets">
+                    <!-- Money Wallet -->
+                    <ui:VisualElement name="money-wallet" class="wallet-container wallet-bg-money">
+                        <ui:VisualElement class="wallet-icon wallet-icon-money" />
+                        <ui:Label name="money-amount" text="1.230" class="wallet-amount" />
+                        <ui:Button name="add-money-btn" text="+" class="wallet-add-button" />
+                    </ui:VisualElement>
+
+                    <!-- Coins Wallet -->
+                    <ui:VisualElement name="coins-wallet" class="wallet-container wallet-bg-coins">
+                        <ui:VisualElement class="wallet-icon wallet-icon-coins" />
+                        <ui:Label name="coins-amount" text="12.000" class="wallet-amount" />
+                        <ui:Button name="add-coins-btn" text="+" class="wallet-add-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- Close Button -->
+                <ui:Button name="close-btn" class="shop-header__close-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- ===== BODY (Sidebar + Content) ===== -->
+        <ui:VisualElement name="shop-body" class="shop-body">
+
+            <!-- Left Sidebar: Tab Buttons -->
+            <ui:VisualElement name="shop-sidebar" class="shop-sidebar">
+                <ui:Button name="tab-offers" text="OFFERS" class="tab-button tab-button--active" />
+                <ui:Button name="tab-money" text="MONEY" class="tab-button" />
+                <ui:Button name="tab-coins" text="COINS" class="tab-button" />
+            </ui:VisualElement>
+
+            <!-- Content Area -->
+            <ui:VisualElement name="shop-content" class="shop-content">
+
+                <!-- Offers Tab Content -->
+                <ui:VisualElement name="offers-content" class="shop-tab-content shop-tab-content--active">
+                    <ui:VisualElement name="offers-scroll" class="offers-container">
+                        <!-- Offer cards will be added procedurally -->
+                    </ui:VisualElement>
+                    <ui:Button name="offers-nav-arrow" class="nav-arrow" />
+                </ui:VisualElement>
+
+                <!-- Money Tab Content -->
+                <ui:VisualElement name="money-content" class="shop-tab-content">
+                    <ui:ScrollView name="money-scroll" class="shop-scroll-view" mode="Vertical">
+                        <!-- Money item cards will be added procedurally -->
+                    </ui:ScrollView>
+                    <ui:Button name="money-nav-arrow" class="nav-arrow" />
+                </ui:VisualElement>
+
+                <!-- Coins Tab Content -->
+                <ui:VisualElement name="coins-content" class="shop-tab-content">
+                    <ui:ScrollView name="coins-scroll" class="shop-scroll-view" mode="Vertical">
+                        <!-- Coin item cards will be added procedurally -->
+                    </ui:ScrollView>
+                    <ui:Button name="coins-nav-arrow" class="nav-arrow" />
+                </ui:VisualElement>
+
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

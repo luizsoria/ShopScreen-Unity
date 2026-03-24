@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:Template name="WalletDisplay" />
+    <Style src="project://database/Assets/UI/USS/Components/WalletDisplay.uss" />
+
+    <ui:VisualElement name="wallet-container" class="wallet-container">
+        <ui:VisualElement name="wallet-icon" class="wallet-icon" />
+        <ui:Label name="wallet-amount" text="0" class="wallet-amount" />
+        <ui:Button name="wallet-add-btn" text="+" class="wallet-add-button" />
+    </ui:VisualElement>
+</ui:UXML>

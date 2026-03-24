@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/UI/USS/Components/OfferCard.uss" />
+
+    <ui:VisualElement name="offer-card" class="offer-card">
+        <!-- Header with title -->
+        <ui:VisualElement name="card-header" class="offer-card__header">
+            <ui:Label name="header-text" text="OFFER" class="offer-card__header-text" />
+        </ui:VisualElement>
+
+        <!-- Body content -->
+        <ui:VisualElement name="card-body" class="offer-card__body">
+            <!-- Image area (for Star Pass) -->
+            <ui:VisualElement name="card-image" class="offer-card__image" />
+
+            <!-- Items list (for Starter/Premium Pack) -->
+            <ui:VisualElement name="items-list" class="offer-card__items-list" />
+        </ui:VisualElement>
+
+        <!-- Footer with buy button -->
+        <ui:VisualElement name="card-footer" class="offer-card__footer">
+            <ui:Button name="buy-button" text="R$ 0,00" class="offer-card__buy-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/UI/USS/Components/ShopItemCard.uss" />
+
+    <ui:VisualElement name="shop-item-card" class="shop-item-card">
+        <!-- Top image area -->
+        <ui:VisualElement name="card-image" class="shop-item-card__image" />
+
+        <!-- Bottom info area -->
+        <ui:VisualElement name="card-info" class="shop-item-card__info">
+            <ui:VisualElement name="amount-row" class="shop-item-card__amount-row">
+                <ui:VisualElement name="currency-icon" class="shop-item-card__currency-icon" />
+                <ui:Label name="amount-text" text="0" class="shop-item-card__amount-text" />
+            </ui:VisualElement>
+            <ui:Button name="buy-button" text="R$ 0,00" class="shop-item-card__buy-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
