@@ -1,0 +1,189 @@
+/* ============================================
+   ShopScreen.uss - Main shop screen layout
+   ============================================ */
+
+/* --- Main Container --- */
+.shop-screen {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(40, 60, 40);
+}
+
+/* --- Header Bar --- */
+.shop-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    padding: 0 16px;
+    background-color: rgba(30, 50, 30, 0.9);
+    border-bottom-width: 2px;
+    border-bottom-color: rgb(60, 80, 60);
+}
+
+.shop-header__left {
+    flex-direction: row;
+    align-items: center;
+}
+
+.shop-header__title {
+    font-size: 28px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    text-shadow: 2px 3px 3px rgba(0, 0, 0, 0.6);
+    letter-spacing: 2px;
+}
+
+.shop-header__right {
+    flex-direction: row;
+    align-items: center;
+}
+
+.shop-header__wallets {
+    flex-direction: row;
+    align-items: center;
+    margin-right: 16px;
+}
+
+.shop-header__close-button {
+    width: 40px;
+    height: 40px;
+    background-image: resource("Art/UI/Shop/Buttom_Close");
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    cursor: link;
+    transition-duration: 0.1s;
+}
+
+.shop-header__close-button:hover {
+    scale: 1.1;
+}
+
+.shop-header__close-button:active {
+    scale: 0.9;
+}
+
+/* --- Body (Tabs + Content) --- */
+.shop-body {
+    flex-grow: 1;
+    flex-direction: row;
+    padding: 8px;
+}
+
+/* --- Left Sidebar (Tabs) --- */
+.shop-sidebar {
+    width: 160px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 16px 8px;
+}
+
+/* --- Content Area --- */
+.shop-content {
+    flex-grow: 1;
+    flex-direction: column;
+    margin-left: 8px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* --- Tab Content Panels --- */
+.shop-tab-content {
+    flex-grow: 1;
+    display: none;
+}
+
+.shop-tab-content--active {
+    display: flex;
+}
+
+/* --- Offers Tab --- */
+.offers-container {
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+
+/* --- Grid Tab (Money/Coins) --- */
+.grid-container {
+    flex-grow: 1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    padding: 8px;
+    overflow: hidden;
+}
+
+.grid-scroll-container {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.grid-row {
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-bottom: 4px;
+}
+
+/* --- Navigation Arrow --- */
+.nav-arrow {
+    width: 40px;
+    height: 40px;
+    align-self: center;
+    background-image: resource("Art/UI/Shop/Buttom_Next");
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    cursor: link;
+    margin-left: 4px;
+    transition-duration: 0.1s;
+}
+
+.nav-arrow:hover {
+    scale: 1.15;
+}
+
+.nav-arrow:active {
+    scale: 0.9;
+}
+
+/* --- Background --- */
+.shop-background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(60, 90, 50);
+}
+
+/* --- ScrollView overrides --- */
+.shop-scroll-view {
+    flex-grow: 1;
+}
+
+.shop-scroll-view .unity-scroll-view__content-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    padding: 4px;
+}
+
+.shop-scroll-view--horizontal .unity-scroll-view__content-container {
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+/* Hide scrollbar for cleaner look */
+.shop-scroll-view .unity-scroller--vertical {
+    display: none;
+}
+
+.shop-scroll-view .unity-scroller--horizontal {
+    display: none;
+}

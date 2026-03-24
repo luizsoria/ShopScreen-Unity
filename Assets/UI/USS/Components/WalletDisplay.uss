@@ -1,0 +1,72 @@
+/* ============================================
+   WalletDisplay.uss - Wallet balance display
+   ============================================ */
+
+.wallet-container {
+    flex-direction: row;
+    align-items: center;
+    height: 36px;
+    padding: 2px 4px 2px 8px;
+    border-radius: 18px;
+    margin-left: 8px;
+}
+
+.wallet-bg-money {
+    background-image: resource("Art/UI/Shop/Frame_MoneyWallet");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+.wallet-bg-coins {
+    background-image: resource("Art/UI/Shop/Frame_CoinWallet");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+.wallet-icon {
+    width: 28px;
+    height: 28px;
+    margin-right: 4px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.wallet-icon-money {
+    background-image: resource("Art/UI/Shop/Icon_HUD_Money");
+}
+
+.wallet-icon-coins {
+    background-image: resource("Art/UI/Shop/Icon_HUD_Coin");
+}
+
+.wallet-amount {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    min-width: 50px;
+    -unity-text-align: middle-center;
+}
+
+.wallet-add-button {
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    background-color: rgb(76, 175, 80);
+    border-width: 2px;
+    border-color: rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    padding: 0;
+    margin-left: 4px;
+    cursor: link;
+}
+
+.wallet-add-button:hover {
+    background-color: rgb(96, 195, 100);
+    scale: 1.1;
+}
+
+.wallet-add-button:active {
+    background-color: rgb(56, 155, 60);
+    scale: 0.9;
+}

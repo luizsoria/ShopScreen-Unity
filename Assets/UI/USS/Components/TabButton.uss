@@ -1,0 +1,42 @@
+/* ============================================
+   TabButton.uss - Navigation tab button styles
+   ============================================ */
+
+.tab-button {
+    width: 140px;
+    height: 44px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: rgb(180, 170, 150);
+    background-color: rgb(220, 215, 200);
+    -unity-font-style: bold;
+    font-size: 16px;
+    color: rgb(80, 75, 65);
+    -unity-text-align: middle-center;
+    cursor: link;
+    transition-duration: 0.15s;
+    transition-property: background-color, border-color, color, scale;
+}
+
+.tab-button:hover {
+    background-color: rgb(235, 230, 215);
+    scale: 1.03;
+}
+
+.tab-button:active {
+    scale: 0.97;
+}
+
+.tab-button--active {
+    background-color: rgb(255, 200, 50);
+    border-color: rgb(200, 150, 20);
+    color: rgb(100, 70, 10);
+    border-width: 3px;
+    border-bottom-width: 4px;
+    border-bottom-color: rgb(180, 130, 10);
+}
+
+.tab-button--active:hover {
+    background-color: rgb(255, 210, 70);
+}

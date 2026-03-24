@@ -1,0 +1,137 @@
+/* ============================================
+   OfferCard.uss - Offer/special pack card styles
+   (Used for Offers tab: Star Pass, Starter Pack, Premium Pack)
+   ============================================ */
+
+.offer-card {
+    width: 200px;
+    height: 260px;
+    margin: 4px 8px;
+    border-radius: 14px;
+    overflow: hidden;
+    flex-shrink: 0;
+    cursor: link;
+    transition-duration: 0.15s;
+    flex-direction: column;
+}
+
+.offer-card:hover {
+    scale: 1.03;
+}
+
+.offer-card:active {
+    scale: 0.97;
+}
+
+/* Card header with title */
+.offer-card__header {
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+}
+
+.offer-card__header--starpass {
+    background-color: rgb(30, 120, 220);
+}
+
+.offer-card__header--starter {
+    background-color: rgb(76, 175, 80);
+}
+
+.offer-card__header--premium {
+    background-color: rgb(200, 50, 50);
+}
+
+.offer-card__header-text {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+    -unity-text-align: middle-center;
+}
+
+/* Card body/content */
+.offer-card__body {
+    flex-grow: 1;
+    flex-direction: column;
+    padding: 8px;
+    background-color: rgb(240, 235, 220);
+}
+
+/* Star Pass specific - image area */
+.offer-card__image {
+    flex-grow: 1;
+    -unity-background-scale-mode: scale-to-fit;
+    margin-bottom: 4px;
+    border-radius: 8px;
+}
+
+.offer-card__image--starpass {
+    background-image: resource("Art/UI/Shop/Frame_OffersShopBG");
+}
+
+/* Starter/Premium Pack - items list */
+.offer-card__items-list {
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4px 8px;
+}
+
+.offer-card__item-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.offer-card__item-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.offer-card__item-text {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(80, 75, 65);
+}
+
+/* Card footer with buy button */
+.offer-card__footer {
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    background-color: rgb(230, 225, 210);
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+}
+
+.offer-card__buy-button {
+    width: 160px;
+    height: 32px;
+    border-radius: 10px;
+    border-width: 0;
+    border-bottom-width: 3px;
+    border-bottom-color: rgb(46, 125, 50);
+    background-color: rgb(76, 175, 80);
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    cursor: link;
+    transition-duration: 0.1s;
+}
+
+.offer-card__buy-button:hover {
+    background-color: rgb(96, 195, 100);
+}
+
+.offer-card__buy-button:active {
+    background-color: rgb(56, 155, 60);
+    border-bottom-width: 1px;
+    margin-top: 2px;
+}
