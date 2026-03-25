@@ -5,14 +5,20 @@
 
 .offer-card {
     width: 200px;
-    height: 260px;
+    height: 280px;
     margin: 4px 8px;
     border-radius: 14px;
+    border-width: 2px;
+    border-color: rgb(180, 140, 80);
     overflow: hidden;
     flex-shrink: 0;
     cursor: link;
-    transition-duration: 0.15s;
     flex-direction: column;
+    background-color: rgb(245, 235, 210);
+    position: relative;
+    transition-property: scale;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
 }
 
 .offer-card:hover {
@@ -23,32 +29,59 @@
     scale: 0.97;
 }
 
+/* --- Ribbon Badge --- */
+.offer-card__ribbon {
+    position: absolute;
+    top: 8px;
+    right: -4px;
+    padding: 3px 10px 3px 8px;
+    border-radius: 4px 0 0 4px;
+    z-index: 10;
+}
+
+.offer-card__ribbon--premium {
+    background-color: rgb(220, 60, 40);
+}
+
+.offer-card__ribbon--starter {
+    background-color: rgb(60, 140, 200);
+}
+
+.offer-card__ribbon-text {
+    font-size: 9px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+}
+
 /* Card header with title */
 .offer-card__header {
-    height: 32px;
+    height: 36px;
     align-items: center;
     justify-content: center;
-    border-top-left-radius: 14px;
-    border-top-right-radius: 14px;
+    border-bottom-width: 2px;
+    border-bottom-color: rgba(0, 0, 0, 0.15);
 }
 
 .offer-card__header--starpass {
-    background-color: rgb(30, 120, 220);
+    background-color: rgb(180, 80, 180);
 }
 
 .offer-card__header--starter {
-    background-color: rgb(76, 175, 80);
+    background-color: rgb(60, 140, 200);
 }
 
 .offer-card__header--premium {
-    background-color: rgb(200, 50, 50);
+    background-color: rgb(200, 160, 40);
 }
 
 .offer-card__header-text {
     font-size: 14px;
     -unity-font-style: bold;
     color: rgb(255, 255, 255);
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+    text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.4);
+    letter-spacing: 2px;
     -unity-text-align: middle-center;
 }
 
@@ -56,16 +89,16 @@
 .offer-card__body {
     flex-grow: 1;
     flex-direction: column;
-    padding: 8px;
-    background-color: rgb(240, 235, 220);
+    padding: 6px;
+    background-color: rgb(245, 235, 210);
 }
 
 /* Star Pass specific - image area */
 .offer-card__image {
     flex-grow: 1;
     -unity-background-scale-mode: scale-to-fit;
-    margin-bottom: 4px;
     border-radius: 8px;
+    margin: 4px;
 }
 
 .offer-card__image--starpass {
@@ -77,13 +110,16 @@
     flex-grow: 1;
     flex-direction: column;
     justify-content: center;
-    padding: 4px 8px;
+    padding: 4px;
 }
 
 .offer-card__item-row {
     flex-direction: row;
     align-items: center;
     margin-bottom: 4px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.04);
 }
 
 .offer-card__item-icon {
@@ -94,44 +130,46 @@
 }
 
 .offer-card__item-text {
-    font-size: 14px;
+    font-size: 11px;
     -unity-font-style: bold;
-    color: rgb(80, 75, 65);
+    color: rgb(80, 60, 30);
+    flex-grow: 1;
+    white-space: normal;
 }
 
 /* Card footer with buy button */
 .offer-card__footer {
-    height: 40px;
+    padding: 6px 12px 10px 12px;
     align-items: center;
-    justify-content: center;
-    padding: 4px;
-    background-color: rgb(230, 225, 210);
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
+    background-color: rgb(235, 225, 195);
+    border-top-width: 1px;
+    border-top-color: rgb(210, 195, 160);
 }
 
 .offer-card__buy-button {
-    width: 160px;
-    height: 32px;
+    width: 100%;
+    height: 36px;
     border-radius: 10px;
-    border-width: 0;
-    border-bottom-width: 3px;
-    border-bottom-color: rgb(46, 125, 50);
-    background-color: rgb(76, 175, 80);
+    border-width: 2px;
+    border-color: rgb(60, 140, 30);
+    background-color: rgb(80, 180, 50);
     color: rgb(255, 255, 255);
     font-size: 14px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
     cursor: link;
-    transition-duration: 0.1s;
+    transition-property: scale, background-color;
+    transition-duration: 100ms;
+    transition-timing-function: ease-out;
 }
 
 .offer-card__buy-button:hover {
-    background-color: rgb(96, 195, 100);
+    background-color: rgb(90, 200, 60);
+    scale: 1.03;
 }
 
 .offer-card__buy-button:active {
-    background-color: rgb(56, 155, 60);
-    border-bottom-width: 1px;
-    margin-top: 2px;
+    background-color: rgb(60, 150, 35);
+    scale: 0.97;
 }

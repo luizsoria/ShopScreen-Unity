@@ -5,6 +5,9 @@
     <Style src="project://database/Assets/UI/USS/Components/TabButton.uss" />
     <Style src="project://database/Assets/UI/USS/Components/ShopItemCard.uss" />
     <Style src="project://database/Assets/UI/USS/Components/OfferCard.uss" />
+    <Style src="project://database/Assets/UI/USS/Components/OfferTimer.uss" />
+    <Style src="project://database/Assets/UI/USS/Components/ConfirmationPopup.uss" />
+    <Style src="project://database/Assets/UI/USS/Components/PurchaseFeedback.uss" />
 
     <ui:VisualElement name="shop-screen" class="shop-screen">
 
@@ -78,6 +81,8 @@
             </ui:VisualElement>
 
         </ui:VisualElement>
+
+        <!-- Confirmation popup and feedback toast are added programmatically -->
 
     </ui:VisualElement>
 </ui:UXML>

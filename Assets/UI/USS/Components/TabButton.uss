@@ -13,14 +13,17 @@
     -unity-font-style: bold;
     font-size: 16px;
     color: rgb(80, 75, 65);
+    letter-spacing: 1px;
     -unity-text-align: middle-center;
     cursor: link;
-    transition-duration: 0.15s;
     transition-property: background-color, border-color, color, scale;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
 }
 
 .tab-button:hover {
     background-color: rgb(235, 230, 215);
+    border-color: rgb(200, 190, 160);
     scale: 1.03;
 }
 
@@ -35,8 +38,13 @@
     border-width: 3px;
     border-bottom-width: 4px;
     border-bottom-color: rgb(180, 130, 10);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .tab-button--active:hover {
     background-color: rgb(255, 210, 70);
+}
+
+.tab-button--active:active {
+    scale: 0.97;
 }

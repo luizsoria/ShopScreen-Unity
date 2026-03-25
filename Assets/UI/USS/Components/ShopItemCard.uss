@@ -8,24 +8,30 @@
     height: 180px;
     margin: 4px 6px;
     border-radius: 12px;
+    border-width: 2px;
+    border-color: rgb(180, 170, 140);
     overflow: hidden;
     cursor: link;
-    transition-duration: 0.15s;
     flex-shrink: 0;
+    background-color: rgb(245, 235, 210);
+    transition-property: scale, border-color;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
 }
 
 .shop-item-card:hover {
-    scale: 1.03;
+    scale: 1.04;
+    border-color: rgb(200, 180, 100);
 }
 
 .shop-item-card:active {
-    scale: 0.97;
+    scale: 0.96;
 }
 
 /* Card image area (top portion) */
 .shop-item-card__image {
     width: 100%;
-    height: 120px;
+    height: 110px;
     -unity-background-scale-mode: scale-to-fit;
     flex-shrink: 0;
 }
@@ -47,9 +53,9 @@
     align-items: center;
     justify-content: center;
     padding: 4px;
-    background-color: rgb(230, 225, 210);
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
+    background-color: rgb(240, 232, 210);
+    border-top-width: 1px;
+    border-top-color: rgb(210, 200, 170);
 }
 
 /* Amount row with icon + number */
@@ -61,8 +67,8 @@
 }
 
 .shop-item-card__currency-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     margin-right: 4px;
     -unity-background-scale-mode: scale-to-fit;
 }
@@ -78,7 +84,8 @@
 .shop-item-card__amount-text {
     font-size: 14px;
     -unity-font-style: bold;
-    color: rgb(80, 75, 65);
+    color: rgb(80, 60, 30);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 /* Purchase button */
@@ -86,38 +93,49 @@
     width: 110px;
     height: 28px;
     border-radius: 8px;
-    border-width: 0;
-    border-bottom-width: 3px;
-    border-bottom-color: rgb(46, 125, 50);
-    background-color: rgb(76, 175, 80);
+    border-width: 2px;
+    border-color: rgb(60, 140, 30);
+    background-color: rgb(80, 180, 50);
     color: rgb(255, 255, 255);
-    font-size: 13px;
+    font-size: 12px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
     cursor: link;
-    transition-duration: 0.1s;
+    transition-property: scale, background-color;
+    transition-duration: 100ms;
+    transition-timing-function: ease-out;
 }
 
 .shop-item-card__buy-button:hover {
-    background-color: rgb(96, 195, 100);
+    background-color: rgb(90, 200, 60);
+    scale: 1.03;
 }
 
 .shop-item-card__buy-button:active {
-    background-color: rgb(56, 155, 60);
-    border-bottom-width: 1px;
-    margin-top: 2px;
+    background-color: rgb(60, 150, 35);
+    scale: 0.97;
 }
 
 /* Watch ad variant */
 .shop-item-card__buy-button--watch {
-    background-color: rgb(76, 175, 80);
+    background-color: rgb(60, 140, 200);
+    border-color: rgb(40, 110, 170);
     flex-direction: row;
     align-items: center;
     justify-content: center;
 }
 
+.shop-item-card__buy-button--watch:hover {
+    background-color: rgb(70, 160, 220);
+}
+
+.shop-item-card__buy-button--watch:active {
+    background-color: rgb(45, 120, 180);
+}
+
 .shop-item-card__watch-icon {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     margin-right: 4px;
 }

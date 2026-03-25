@@ -9,6 +9,9 @@
     padding: 2px 4px 2px 8px;
     border-radius: 18px;
     margin-left: 8px;
+    transition-property: scale;
+    transition-duration: 200ms;
+    transition-timing-function: ease-out;
 }
 
 .wallet-bg-money {
@@ -43,13 +46,15 @@
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
     min-width: 50px;
     -unity-text-align: middle-center;
+    transition-property: color;
+    transition-duration: 300ms;
 }
 
 .wallet-add-button {
     width: 24px;
     height: 24px;
     border-radius: 12px;
-    background-color: rgb(76, 175, 80);
+    background-color: rgb(80, 180, 50);
     border-width: 2px;
     border-color: rgb(255, 255, 255);
     color: rgb(255, 255, 255);
@@ -59,14 +64,17 @@
     padding: 0;
     margin-left: 4px;
     cursor: link;
+    transition-property: scale, background-color;
+    transition-duration: 100ms;
+    transition-timing-function: ease-out;
 }
 
 .wallet-add-button:hover {
-    background-color: rgb(96, 195, 100);
+    background-color: rgb(90, 200, 60);
     scale: 1.1;
 }
 
 .wallet-add-button:active {
-    background-color: rgb(56, 155, 60);
+    background-color: rgb(60, 150, 35);
     scale: 0.9;
 }
