@@ -54,6 +54,8 @@ All visual elements are built with UXML templates and USS stylesheets, organized
 ```
 Assets/
 ├── Art/UI/Shop/              # Image assets (sprites, icons, backgrounds)
+├── Scenes/                   # Unity scenes
+│   └── ShopScene.unity       # Main shop scene (included in Build Settings)
 ├── Scripts/
 │   ├── Common/
 │   │   ├── DI/               # ServiceLocator for dependency management
@@ -70,22 +72,31 @@ Assets/
 │   │   └── Components/       # Reusable UXML templates
 │   └── USS/                  # UI Toolkit style files
 │       └── Components/       # Component-specific styles
-└── Resources/ShopData/       # Runtime-loadable shop data
+└── Resources/ShopData/       # Runtime-loadable shop data (generated via Editor tools)
 ```
 
 ## Requirements
 
-- **Unity 6000.3 LTS** (Unity 6.3 LTS) or later
+- **Unity 6000.3.12f1 LTS** (Unity 6.3 LTS)
 - UI Toolkit package (included by default)
 
-## Setup
+## Quick Start
 
-1. Clone this repository
-2. Open the project in Unity 6000.3 LTS
-3. Use **Tools > Shop > Create Default Catalog** to generate sample data
-4. Use **Tools > Shop > Setup Shop Scene** to configure the scene
-5. Assign the **ShopCatalog** to the ShopScreen component in the Inspector
-6. Enter Play Mode to interact with the shop UI
+Follow these steps **in order** after cloning the repository:
+
+1. **Clone** this repository
+2. **Open** the project in **Unity 6000.3.12f1 LTS**
+   - If prompted about "Corrupted Library", click **Rebuild Library**
+   - If prompted about "Project Change Required", click **Continue**
+   - If prompted about "Enter Safe Mode" due to compilation errors, click **Ignore** (errors should resolve after full import)
+   - If prompted about "Mobile Dependency Resolver", click **Ignore**
+3. **Wait** for Unity to finish importing all assets and compiling scripts
+4. Run **Tools > Shop > Create Default Catalog** to generate the ScriptableObject data
+5. Run **Tools > Shop > Setup Shop Scene** to create and configure the scene
+   - This creates the scene with all GameObjects, assigns UXML/USS/PanelSettings, and adds it to Build Settings
+6. **Enter Play Mode** to interact with the shop UI
+
+> **Note**: Steps 4 and 5 are required because ScriptableObject assets and scene references contain GUIDs that are generated per-project. The Editor tools automate the entire setup process.
 
 ## Purchase Flow
 
