@@ -1,11 +1,13 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Common.UI
 {
     /// <summary>
-    /// Base class for all UI screens.
-    /// Provides common functionality for UI document management and element initialization.
+    /// Base class for all UI screens using UI Toolkit.
+    /// Provides common functionality for UI document management, element
+    /// initialization, and proper callback lifecycle management.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public abstract class UIScreenBase : MonoBehaviour
@@ -14,6 +16,10 @@ namespace Common.UI
         [SerializeField] protected UIDocument uiDocument;
 
         protected VisualElement root;
+
+        // Store registered callbacks for proper cleanup
+        private readonly Dictionary<Button, EventCallback<ClickEvent>> _registeredCallbacks
+            = new Dictionary<Button, EventCallback<ClickEvent>>();
 
         protected virtual void Awake()
         {
@@ -45,6 +51,7 @@ namespace Common.UI
         protected virtual void OnDisable()
         {
             UnregisterCallbacks();
+            UnregisterAllButtonCallbacks();
             OnScreenDisabled();
         }
 
@@ -93,24 +100,46 @@ namespace Common.UI
 
         /// <summary>
         /// Helper method to register button click callbacks.
+        /// Stores the callback reference for proper cleanup on disable.
         /// </summary>
         protected void RegisterButtonCallback(Button button, System.Action callback)
         {
-            if (button != null && callback != null)
+            if (button == null || callback == null) return;
+
+            // Create and store the callback wrapper so we can unregister the same instance
+            EventCallback<ClickEvent> handler = evt => callback();
+            button.RegisterCallback(handler);
+            _registeredCallbacks[button] = handler;
+        }
+
+        /// <summary>
+        /// Unregister a specific button callback.
+        /// </summary>
+        protected void UnregisterButtonCallback(Button button)
+        {
+            if (button == null) return;
+
+            if (_registeredCallbacks.TryGetValue(button, out var handler))
             {
-                button.RegisterCallback<ClickEvent>(evt => callback());
+                button.UnregisterCallback(handler);
+                _registeredCallbacks.Remove(button);
             }
         }
 
         /// <summary>
-        /// Helper method to unregister button click callbacks.
+        /// Unregister all stored button callbacks.
+        /// Called automatically on OnDisable.
         /// </summary>
-        protected void UnregisterButtonCallback(Button button, System.Action callback)
+        private void UnregisterAllButtonCallbacks()
         {
-            if (button != null && callback != null)
+            foreach (var kvp in _registeredCallbacks)
             {
-                button.UnregisterCallback<ClickEvent>(evt => callback());
+                if (kvp.Key != null)
+                {
+                    kvp.Key.UnregisterCallback(kvp.Value);
+                }
             }
+            _registeredCallbacks.Clear();
         }
     }
 }
