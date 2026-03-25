@@ -8,6 +8,7 @@ namespace Shop.Editor
     /// <summary>
     /// Editor utility to create a default ShopCatalog with sample data.
     /// Access via menu: Tools > Shop > Create Default Catalog.
+    /// Generates varied, realistic shop items for demonstration.
     /// </summary>
     public static class DefaultShopCatalogCreator
     {
@@ -22,35 +23,49 @@ namespace Shop.Editor
 
             // Create offer items
             var starPass = CreateOfferItem("StarPass", "STAR PASS", OfferType.StarPass, 19.99f);
-            var starterPack = CreateOfferItem("StarterPack", "STARTER PACK", OfferType.StarterPack, 19.99f);
-            var premiumPack = CreateOfferItem("PremiumPack", "PREMIUM PACK", OfferType.PremiumPack, 19.99f);
+            var starterPack = CreateOfferItem("StarterPack", "STARTER PACK", OfferType.StarterPack, 9.99f);
+            var premiumPack = CreateOfferItem("PremiumPack", "PREMIUM PACK", OfferType.PremiumPack, 49.99f);
 
-            // Create money items (10 items, last in first row is watch ad)
+            // Create money items with varied amounts and prices
+            int[] moneyAmounts = { 100, 500, 1000, 2500, 50, 5000, 10000, 25000, 50000, 100000 };
+            float[] moneyPrices = { 1.99f, 4.99f, 9.99f, 19.99f, 0f, 29.99f, 49.99f, 99.99f, 149.99f, 249.99f };
+            string[] moneyNames = {
+                "Pocket Money", "Small Stack", "Money Bag", "Treasure Chest", "Free Money",
+                "Gold Vault", "Money Mountain", "Fortune", "Jackpot", "Money Empire"
+            };
+
             var moneyItems = new ShopItemData[10];
             for (int i = 0; i < 10; i++)
             {
                 bool isWatchAd = (i == 4);
                 moneyItems[i] = CreateShopItem(
                     $"MoneyPack_{i + 1}",
-                    $"Money Pack {i + 1}",
-                    2500,
+                    moneyNames[i],
+                    moneyAmounts[i],
                     CurrencyType.Money,
-                    19.99f,
+                    moneyPrices[i],
                     isWatchAd
                 );
             }
 
-            // Create coin items (10 items, last in first row is watch ad)
+            // Create coin items with varied amounts and prices
+            int[] coinAmounts = { 500, 2500, 5000, 10000, 200, 25000, 50000, 100000, 250000, 500000 };
+            float[] coinPrices = { 1.99f, 4.99f, 9.99f, 19.99f, 0f, 29.99f, 49.99f, 99.99f, 149.99f, 249.99f };
+            string[] coinNames = {
+                "Coin Pouch", "Coin Sack", "Coin Chest", "Coin Hoard", "Free Coins",
+                "Coin Treasury", "Coin Vault", "Coin Mountain", "Coin Kingdom", "Coin Empire"
+            };
+
             var coinItems = new ShopItemData[10];
             for (int i = 0; i < 10; i++)
             {
                 bool isWatchAd = (i == 4);
                 coinItems[i] = CreateShopItem(
                     $"CoinPack_{i + 1}",
-                    $"Coin Pack {i + 1}",
-                    2500,
+                    coinNames[i],
+                    coinAmounts[i],
                     CurrencyType.Coins,
-                    19.99f,
+                    coinPrices[i],
                     isWatchAd
                 );
             }
@@ -105,7 +120,8 @@ namespace Shop.Editor
             typeof(ShopItemData).GetField("amount", flags)?.SetValue(item, amount);
             typeof(ShopItemData).GetField("currencyType", flags)?.SetValue(item, currencyType);
             typeof(ShopItemData).GetField("price", flags)?.SetValue(item, price);
-            typeof(ShopItemData).GetField("priceFormatted", flags)?.SetValue(item, $"R$ {price:F2}".Replace(".", ","));
+            typeof(ShopItemData).GetField("priceFormatted", flags)?.SetValue(item,
+                isWatchAd ? "FREE" : $"R$ {price:F2}".Replace(".", ","));
             typeof(ShopItemData).GetField("isWatchAd", flags)?.SetValue(item, isWatchAd);
 
             string assetPath = $"Assets/Resources/ShopData/{id}.asset";
