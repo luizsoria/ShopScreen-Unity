@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Common.UI;
 using Shop.Data;
 using Shop.Services;
 
@@ -8,28 +9,35 @@ namespace Shop.UI
 {
     /// <summary>
     /// Controller for the wallet display in the shop header.
-    /// Manages the visual representation of currency balances and the "+" button.
+    /// Manages the visual representation of currency balances with animated
+    /// number transitions and the "+" button for quick navigation.
     /// </summary>
     public class WalletDisplayController
     {
         private readonly Label _amountLabel;
         private readonly Button _addButton;
+        private readonly VisualElement _container;
         private readonly CurrencyType _currencyType;
         private readonly IWalletService _walletService;
 
+        private int _displayedBalance;
+
         public WalletDisplayController(
+            VisualElement container,
             Label amountLabel,
             Button addButton,
             CurrencyType currencyType,
             IWalletService walletService)
         {
+            _container = container;
             _amountLabel = amountLabel;
             _addButton = addButton;
             _currencyType = currencyType;
             _walletService = walletService;
 
             // Set initial balance
-            UpdateDisplay(_walletService.GetBalance(_currencyType));
+            _displayedBalance = _walletService.GetBalance(_currencyType);
+            UpdateDisplay(_displayedBalance);
 
             // Listen for balance changes
             _walletService.OnBalanceChanged += OnBalanceChanged;
@@ -58,7 +66,17 @@ namespace Shop.UI
         {
             if (type == _currencyType)
             {
-                UpdateDisplay(newBalance);
+                int previousBalance = _displayedBalance;
+                _displayedBalance = newBalance;
+
+                // Animate the number change
+                UIAnimationHelper.AnimateNumber(_amountLabel, previousBalance, newBalance, 600f);
+
+                // Bounce the container for visual feedback
+                if (_container != null)
+                {
+                    UIAnimationHelper.ScaleBounce(_container, 1.1f, 200f);
+                }
             }
         }
 
@@ -72,8 +90,15 @@ namespace Shop.UI
 
         private void OnAddButtonClicked()
         {
-            Debug.Log($"[WalletDisplay] Add {_currencyType} button clicked. " +
-                      $"Navigate to {_currencyType} purchase tab.");
+            Debug.Log($"[WalletDisplay] Add {_currencyType} button clicked.");
+
+            // Publish tab switch event
+            Common.Events.EventBus.Publish(new Events.TabSwitchRequestedEvent
+            {
+                Tab = _currencyType == CurrencyType.Money
+                    ? Data.ShopTabType.Money
+                    : Data.ShopTabType.Coins
+            });
         }
 
         private string FormatNumber(int number)

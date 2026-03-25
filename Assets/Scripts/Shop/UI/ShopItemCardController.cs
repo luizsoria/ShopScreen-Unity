@@ -1,13 +1,15 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Common.UI;
 using Shop.Data;
 
 namespace Shop.UI
 {
     /// <summary>
     /// Controller for individual shop item cards (Money/Coins tabs).
-    /// Responsible for setting up the visual elements and handling click events.
+    /// Responsible for setting up the visual elements, handling click events,
+    /// and providing visual feedback on interactions.
     /// Each instance manages one card in the grid.
     /// </summary>
     public class ShopItemCardController
@@ -17,6 +19,7 @@ namespace Shop.UI
         private readonly VisualElement _currencyIcon;
         private readonly Label _amountText;
         private readonly Button _buyButton;
+        private readonly VisualElement _watchIcon;
 
         private ShopItemData _itemData;
         private Action<ShopItemData> _onPurchaseClicked;
@@ -59,8 +62,13 @@ namespace Shop.UI
             _buyButton = new Button();
             _buyButton.name = "buy-button";
             _buyButton.AddToClassList("shop-item-card__buy-button");
-            infoContainer.Add(_buyButton);
 
+            // Watch icon (for ad-based items)
+            _watchIcon = new VisualElement();
+            _watchIcon.AddToClassList("shop-item-card__watch-icon");
+            _watchIcon.style.display = DisplayStyle.None;
+
+            infoContainer.Add(_buyButton);
             _root.Add(infoContainer);
         }
 
@@ -72,6 +80,13 @@ namespace Shop.UI
             _itemData = data;
             _onPurchaseClicked = onPurchase;
             _onWatchAdClicked = onWatchAd;
+
+            // Clear any previous type-specific classes
+            _cardImage.RemoveFromClassList("shop-item-card__image--money");
+            _cardImage.RemoveFromClassList("shop-item-card__image--coins");
+            _currencyIcon.RemoveFromClassList("shop-item-card__currency-icon--money");
+            _currencyIcon.RemoveFromClassList("shop-item-card__currency-icon--coins");
+            _buyButton.RemoveFromClassList("shop-item-card__buy-button--watch");
 
             // Set currency-specific styles
             if (data.CurrencyType == CurrencyType.Money)
@@ -91,14 +106,21 @@ namespace Shop.UI
             // Set button text and behavior
             if (data.IsWatchAd)
             {
-                _buyButton.text = "WATCH";
+                _buyButton.text = "WATCH AD";
                 _buyButton.AddToClassList("shop-item-card__buy-button--watch");
+                _watchIcon.style.display = DisplayStyle.Flex;
                 _buyButton.clicked += OnWatchAdClick;
             }
             else
             {
                 _buyButton.text = data.PriceFormatted;
                 _buyButton.clicked += OnPurchaseClick;
+            }
+
+            // Set icon from data if available
+            if (data.Icon != null)
+            {
+                _cardImage.style.backgroundImage = new StyleBackground(data.Icon);
             }
         }
 
@@ -113,11 +135,14 @@ namespace Shop.UI
 
         private void OnPurchaseClick()
         {
+            // Visual feedback
+            UIAnimationHelper.ScaleBounce(_root, 0.95f, 100f);
             _onPurchaseClicked?.Invoke(_itemData);
         }
 
         private void OnWatchAdClick()
         {
+            UIAnimationHelper.ScaleBounce(_root, 0.95f, 100f);
             _onWatchAdClicked?.Invoke(_itemData);
         }
 

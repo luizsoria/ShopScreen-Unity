@@ -1,13 +1,15 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Common.UI;
 using Shop.Data;
 
 namespace Shop.UI
 {
     /// <summary>
     /// Controller for individual offer cards (Offers tab).
-    /// Handles Star Pass, Starter Pack, and Premium Pack cards.
+    /// Handles Star Pass, Starter Pack, and Premium Pack cards with
+    /// countdown timers, animations, and ribbon badges.
     /// Each instance manages one offer card.
     /// </summary>
     public class OfferCardController
@@ -19,9 +21,13 @@ namespace Shop.UI
         private readonly VisualElement _imageArea;
         private readonly VisualElement _itemsList;
         private readonly Button _buyButton;
+        private readonly VisualElement _ribbon;
+        private readonly Label _ribbonText;
 
         private OfferItemData _offerData;
         private Action<OfferItemData> _onPurchaseClicked;
+        private OfferTimerController _timerController;
+        private IVisualElementScheduledItem _pulseAnimation;
 
         public VisualElement Root => _root;
 
@@ -31,6 +37,16 @@ namespace Shop.UI
             _root = new VisualElement();
             _root.name = "offer-card";
             _root.AddToClassList("offer-card");
+
+            // Ribbon badge (e.g., "BEST VALUE", "LIMITED")
+            _ribbon = new VisualElement();
+            _ribbon.AddToClassList("offer-card__ribbon");
+            _ribbon.style.display = DisplayStyle.None;
+
+            _ribbonText = new Label("BEST VALUE");
+            _ribbonText.AddToClassList("offer-card__ribbon-text");
+            _ribbon.Add(_ribbonText);
+            _root.Add(_ribbon);
 
             // Header
             _header = new VisualElement();
@@ -56,7 +72,7 @@ namespace Shop.UI
 
             _root.Add(_body);
 
-            // Footer
+            // Footer with timer + buy button
             var footer = new VisualElement();
             footer.AddToClassList("offer-card__footer");
 
@@ -82,14 +98,12 @@ namespace Shop.UI
             // Set content based on offer type
             if (data.OfferType == OfferType.StarPass)
             {
-                // Star Pass shows an image
                 _imageArea.style.display = DisplayStyle.Flex;
                 _imageArea.AddToClassList("offer-card__image--starpass");
                 _itemsList.style.display = DisplayStyle.None;
             }
             else
             {
-                // Starter/Premium Pack shows items list
                 _imageArea.style.display = DisplayStyle.None;
                 _itemsList.style.display = DisplayStyle.Flex;
                 PopulateItemsList(data.RewardItems);
@@ -98,14 +112,36 @@ namespace Shop.UI
             // Set buy button
             _buyButton.text = data.PriceFormatted;
             _buyButton.clicked += OnPurchaseClick;
+
+            // Show ribbon for premium pack
+            if (data.OfferType == OfferType.PremiumPack)
+            {
+                _ribbon.style.display = DisplayStyle.Flex;
+                _ribbonText.text = "BEST VALUE";
+                _ribbon.AddToClassList("offer-card__ribbon--premium");
+            }
+            else if (data.OfferType == OfferType.StarterPack)
+            {
+                _ribbon.style.display = DisplayStyle.Flex;
+                _ribbonText.text = "POPULAR";
+                _ribbon.AddToClassList("offer-card__ribbon--starter");
+            }
+
+            // Add countdown timer
+            AddTimer(data.OfferType);
+
+            // Add pulse animation to buy button for attention
+            _pulseAnimation = UIAnimationHelper.Pulse(_buyButton, 0.98f, 1.02f, 2000f);
         }
 
         /// <summary>
-        /// Clean up event handlers.
+        /// Clean up event handlers and animations.
         /// </summary>
         public void Unbind()
         {
             _buyButton.clicked -= OnPurchaseClick;
+            _pulseAnimation?.Pause();
+            _timerController?.StopTimer();
         }
 
         private void ApplyHeaderStyle(OfferType offerType)
@@ -121,6 +157,48 @@ namespace Shop.UI
                 case OfferType.PremiumPack:
                     _header.AddToClassList("offer-card__header--premium");
                     break;
+            }
+        }
+
+        private void AddTimer(OfferType offerType)
+        {
+            _timerController = new OfferTimerController();
+
+            // Different durations based on offer type
+            TimeSpan duration;
+            switch (offerType)
+            {
+                case OfferType.StarPass:
+                    duration = TimeSpan.FromDays(7);
+                    break;
+                case OfferType.StarterPack:
+                    duration = TimeSpan.FromHours(23).Add(TimeSpan.FromMinutes(59));
+                    break;
+                case OfferType.PremiumPack:
+                    duration = TimeSpan.FromDays(3);
+                    break;
+                default:
+                    duration = TimeSpan.FromDays(1);
+                    break;
+            }
+
+            _timerController.StartTimer(duration, () =>
+            {
+                Debug.Log($"[OfferCard] Offer expired: {_offerData?.OfferName}");
+                _buyButton.SetEnabled(false);
+                _buyButton.text = "EXPIRED";
+            });
+
+            // Insert timer before footer
+            var footer = _root.Q(className: "offer-card__footer");
+            if (footer != null)
+            {
+                int footerIndex = _root.IndexOf(footer);
+                _root.Insert(footerIndex, _timerController.Root);
+            }
+            else
+            {
+                _root.Add(_timerController.Root);
             }
         }
 
@@ -143,7 +221,7 @@ namespace Shop.UI
                 }
                 row.Add(icon);
 
-                var text = new Label($"{reward.FormattedText}");
+                var text = new Label(reward.FormattedText);
                 text.AddToClassList("offer-card__item-text");
 
                 if (!string.IsNullOrEmpty(reward.Description))
@@ -158,6 +236,8 @@ namespace Shop.UI
 
         private void OnPurchaseClick()
         {
+            // Bounce animation on click
+            UIAnimationHelper.ScaleBounce(_root, 0.95f, 100f);
             _onPurchaseClicked?.Invoke(_offerData);
         }
     }
