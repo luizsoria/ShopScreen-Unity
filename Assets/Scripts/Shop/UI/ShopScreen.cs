@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Common.DI;
+using Common.Events;
 using Common.UI;
 using Shop.Data;
+using Shop.Events;
 using Shop.Services;
 
 namespace Shop.UI
@@ -10,24 +14,24 @@ namespace Shop.UI
     /// <summary>
     /// Main shop screen controller. Extends UIScreenBase to integrate with the
     /// navigation system. Orchestrates all shop UI components including tabs,
-    /// item grids, offer cards, and wallet displays.
+    /// item grids, offer cards, wallet displays, confirmation popup, and
+    /// purchase feedback.
     ///
     /// Items are loaded procedurally from a ShopCatalog ScriptableObject.
+    /// Uses EventBus for decoupled communication and ServiceLocator for DI.
     /// </summary>
     public class ShopScreen : UIScreenBase
     {
         [Header("Shop Configuration")]
         [SerializeField] private ShopCatalog shopCatalog;
 
-        // Services (Dependency Inversion Principle)
+        // Services (resolved via ServiceLocator)
         private IShopService _shopService;
         private IWalletService _walletService;
 
         // UI Element references
         private Label _shopTitle;
         private Button _closeButton;
-        private VisualElement _shopSidebar;
-        private VisualElement _shopContent;
 
         // Tab buttons
         private Button _tabOffers;
@@ -49,7 +53,9 @@ namespace Shop.UI
         private Button _moneyNavArrow;
         private Button _coinsNavArrow;
 
-        // Wallet displays
+        // Wallet elements
+        private VisualElement _moneyWalletContainer;
+        private VisualElement _coinsWalletContainer;
         private Label _moneyAmountLabel;
         private Label _coinsAmountLabel;
         private Button _addMoneyBtn;
@@ -58,6 +64,8 @@ namespace Shop.UI
         // Controllers
         private WalletDisplayController _moneyWalletController;
         private WalletDisplayController _coinsWalletController;
+        private ConfirmationPopupController _confirmationPopup;
+        private PurchaseFeedbackController _purchaseFeedback;
         private readonly List<ShopItemCardController> _moneyCardControllers = new List<ShopItemCardController>();
         private readonly List<ShopItemCardController> _coinsCardControllers = new List<ShopItemCardController>();
         private readonly List<OfferCardController> _offerCardControllers = new List<OfferCardController>();
@@ -72,8 +80,7 @@ namespace Shop.UI
         }
 
         /// <summary>
-        /// Initialize service dependencies.
-        /// In a production app, these would be injected via a DI container.
+        /// Initialize service dependencies using ServiceLocator.
         /// </summary>
         private void InitializeServices()
         {
@@ -82,6 +89,10 @@ namespace Shop.UI
 
             _walletService = new MockWalletService(initialMoney, initialCoins);
             _shopService = new MockShopService(_walletService);
+
+            // Register services for other components to use
+            ServiceLocator.Register<IWalletService>(_walletService);
+            ServiceLocator.Register<IShopService>(_shopService);
         }
 
         protected override void InitializeUIElements()
@@ -91,6 +102,8 @@ namespace Shop.UI
             _closeButton = QueryElement<Button>("close-btn");
 
             // Wallet elements
+            _moneyWalletContainer = QueryElement<VisualElement>("money-wallet");
+            _coinsWalletContainer = QueryElement<VisualElement>("coins-wallet");
             _moneyAmountLabel = QueryElement<Label>("money-amount");
             _coinsAmountLabel = QueryElement<Label>("coins-amount");
             _addMoneyBtn = QueryElement<Button>("add-money-btn");
@@ -131,6 +144,11 @@ namespace Shop.UI
             RegisterButtonCallback(_offersNavArrow, () => OnNavArrowClicked(ShopTabType.Offers));
             RegisterButtonCallback(_moneyNavArrow, () => OnNavArrowClicked(ShopTabType.Money));
             RegisterButtonCallback(_coinsNavArrow, () => OnNavArrowClicked(ShopTabType.Coins));
+
+            // EventBus subscriptions
+            EventBus.Subscribe<PurchaseConfirmedEvent>(OnPurchaseConfirmed);
+            EventBus.Subscribe<PurchaseCompletedEvent>(OnPurchaseCompleted);
+            EventBus.Subscribe<TabSwitchRequestedEvent>(OnTabSwitchRequested);
         }
 
         protected override void UnregisterCallbacks()
@@ -146,6 +164,14 @@ namespace Shop.UI
             // Clean up wallet controllers
             _moneyWalletController?.Dispose();
             _coinsWalletController?.Dispose();
+
+            // Clean up popup
+            _confirmationPopup?.Dispose();
+
+            // EventBus unsubscriptions
+            EventBus.Unsubscribe<PurchaseConfirmedEvent>(OnPurchaseConfirmed);
+            EventBus.Unsubscribe<PurchaseCompletedEvent>(OnPurchaseCompleted);
+            EventBus.Unsubscribe<TabSwitchRequestedEvent>(OnTabSwitchRequested);
         }
 
         protected override void OnScreenEnabled()
@@ -153,10 +179,16 @@ namespace Shop.UI
             // Initialize wallet displays
             SetupWalletDisplays();
 
+            // Initialize confirmation popup
+            SetupConfirmationPopup();
+
+            // Initialize purchase feedback
+            SetupPurchaseFeedback();
+
             // Load shop items procedurally
             PopulateShopItems();
 
-            // Set initial tab
+            // Set initial tab with animation
             SwitchTab(ShopTabType.Offers);
 
             // Register with navigation controller
@@ -168,17 +200,33 @@ namespace Shop.UI
         protected override void OnScreenDisabled()
         {
             UINavigationController.UnregisterScreen(Screens.Shop);
+            ServiceLocator.Clear();
+            EventBus.Clear();
         }
 
-        // ===== WALLET SETUP =====
+        // ===== SETUP METHODS =====
 
         private void SetupWalletDisplays()
         {
             _moneyWalletController = new WalletDisplayController(
-                _moneyAmountLabel, _addMoneyBtn, CurrencyType.Money, _walletService);
+                _moneyWalletContainer, _moneyAmountLabel, _addMoneyBtn,
+                CurrencyType.Money, _walletService);
 
             _coinsWalletController = new WalletDisplayController(
-                _coinsAmountLabel, _addCoinsBtn, CurrencyType.Coins, _walletService);
+                _coinsWalletContainer, _coinsAmountLabel, _addCoinsBtn,
+                CurrencyType.Coins, _walletService);
+        }
+
+        private void SetupConfirmationPopup()
+        {
+            _confirmationPopup = new ConfirmationPopupController();
+            root.Add(_confirmationPopup.Root);
+        }
+
+        private void SetupPurchaseFeedback()
+        {
+            _purchaseFeedback = new PurchaseFeedbackController();
+            root.Add(_purchaseFeedback.Root);
         }
 
         // ===== PROCEDURAL ITEM LOADING =====
@@ -192,25 +240,15 @@ namespace Shop.UI
                 return;
             }
 
-            // Populate Offers
             PopulateOffers(shopCatalog.Offers);
-
-            // Populate Money items
             PopulateGridItems(shopCatalog.MoneyItems, _moneyScroll, _moneyCardControllers);
-
-            // Populate Coins items
             PopulateGridItems(shopCatalog.CoinItems, _coinsScroll, _coinsCardControllers);
         }
 
         private void PopulateWithDefaultData()
         {
-            // Create default offer cards
             CreateDefaultOfferCards();
-
-            // Create default money items
             CreateDefaultGridItems(CurrencyType.Money, _moneyScroll, _moneyCardControllers, 10);
-
-            // Create default coins items
             CreateDefaultGridItems(CurrencyType.Coins, _coinsScroll, _coinsCardControllers, 10);
         }
 
@@ -225,12 +263,24 @@ namespace Shop.UI
                 return;
             }
 
+            int index = 0;
             foreach (var offer in offers)
             {
                 var controller = new OfferCardController();
                 controller.Bind(offer, OnOfferPurchaseClicked);
-                _offersScroll.Add(controller.Root);
+
+                // Stagger slide-in animation
+                var cardRoot = controller.Root;
+                cardRoot.style.opacity = 0f;
+                int delay = index * 100;
+                cardRoot.schedule.Execute(() =>
+                {
+                    UIAnimationHelper.SlideIn(cardRoot, SlideDirection.Up, 400f);
+                }).ExecuteLater(delay);
+
+                _offersScroll.Add(cardRoot);
                 _offerCardControllers.Add(controller);
+                index++;
             }
         }
 
@@ -238,49 +288,45 @@ namespace Shop.UI
         {
             if (_offersScroll == null) return;
 
-            // Star Pass
-            var starPassController = new OfferCardController();
-            var starPassData = CreateDefaultOfferData("star_pass", "STAR PASS", OfferType.StarPass, 19.99f);
-            starPassController.Bind(starPassData, OnOfferPurchaseClicked);
-            _offersScroll.Add(starPassController.Root);
-            _offerCardControllers.Add(starPassController);
+            var defaultOffers = new[]
+            {
+                ("star_pass", "STAR PASS", OfferType.StarPass, 19.99f),
+                ("starter_pack", "STARTER PACK", OfferType.StarterPack, 19.99f),
+                ("premium_pack", "PREMIUM PACK", OfferType.PremiumPack, 49.99f)
+            };
 
-            // Starter Pack
-            var starterController = new OfferCardController();
-            var starterData = CreateDefaultOfferData("starter_pack", "STARTER PACK", OfferType.StarterPack, 19.99f);
-            starterController.Bind(starterData, OnOfferPurchaseClicked);
-            _offersScroll.Add(starterController.Root);
-            _offerCardControllers.Add(starterController);
+            int index = 0;
+            foreach (var (id, name, type, price) in defaultOffers)
+            {
+                var controller = new OfferCardController();
+                var data = CreateDefaultOfferData(id, name, type, price);
+                controller.Bind(data, OnOfferPurchaseClicked);
 
-            // Premium Pack
-            var premiumController = new OfferCardController();
-            var premiumData = CreateDefaultOfferData("premium_pack", "PREMIUM PACK", OfferType.PremiumPack, 19.99f);
-            premiumController.Bind(premiumData, OnOfferPurchaseClicked);
-            _offersScroll.Add(premiumController.Root);
-            _offerCardControllers.Add(premiumController);
+                // Stagger slide-in animation
+                var cardRoot = controller.Root;
+                cardRoot.style.opacity = 0f;
+                int delay = index * 150;
+                cardRoot.schedule.Execute(() =>
+                {
+                    UIAnimationHelper.SlideIn(cardRoot, SlideDirection.Up, 400f);
+                }).ExecuteLater(delay);
+
+                _offersScroll.Add(cardRoot);
+                _offerCardControllers.Add(controller);
+                index++;
+            }
         }
 
         private OfferItemData CreateDefaultOfferData(string id, string name, OfferType type, float price)
         {
             var data = ScriptableObject.CreateInstance<OfferItemData>();
+            var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
 
-            // Use reflection to set private serialized fields for runtime-created instances
-            var idField = typeof(OfferItemData).GetField("offerId",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var nameField = typeof(OfferItemData).GetField("offerName",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var typeField = typeof(OfferItemData).GetField("offerType",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var priceField = typeof(OfferItemData).GetField("price",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var priceFormattedField = typeof(OfferItemData).GetField("priceFormatted",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-            idField?.SetValue(data, id);
-            nameField?.SetValue(data, name);
-            typeField?.SetValue(data, type);
-            priceField?.SetValue(data, price);
-            priceFormattedField?.SetValue(data, $"R$ {price:F2}".Replace(".", ","));
+            typeof(OfferItemData).GetField("offerId", flags)?.SetValue(data, id);
+            typeof(OfferItemData).GetField("offerName", flags)?.SetValue(data, name);
+            typeof(OfferItemData).GetField("offerType", flags)?.SetValue(data, type);
+            typeof(OfferItemData).GetField("price", flags)?.SetValue(data, price);
+            typeof(OfferItemData).GetField("priceFormatted", flags)?.SetValue(data, $"R$ {price:F2}".Replace(".", ","));
 
             return data;
         }
@@ -297,19 +343,17 @@ namespace Shop.UI
 
             if (items == null || items.Length == 0) return;
 
-            // Create a wrapper for the grid layout
             var gridWrapper = new VisualElement();
-            gridWrapper.style.flexDirection = FlexDirection.Row;
-            gridWrapper.style.flexWrap = Wrap.Wrap;
-            gridWrapper.style.alignContent = Align.FlexStart;
-            gridWrapper.style.flexGrow = 1;
+            gridWrapper.AddToClassList("shop-grid-wrapper");
 
+            int index = 0;
             foreach (var item in items)
             {
                 var controller = new ShopItemCardController();
                 controller.Bind(item, OnItemPurchaseClicked, OnWatchAdClicked);
                 gridWrapper.Add(controller.Root);
                 controllers.Add(controller);
+                index++;
             }
 
             contentContainer.Add(gridWrapper);
@@ -327,21 +371,28 @@ namespace Shop.UI
             contentContainer.Clear();
 
             var gridWrapper = new VisualElement();
-            gridWrapper.style.flexDirection = FlexDirection.Row;
-            gridWrapper.style.flexWrap = Wrap.Wrap;
-            gridWrapper.style.alignContent = Align.FlexStart;
-            gridWrapper.style.flexGrow = 1;
+            gridWrapper.AddToClassList("shop-grid-wrapper");
+
+            // Varied amounts for more realistic look
+            int[] amounts = currencyType == CurrencyType.Money
+                ? new[] { 100, 500, 1000, 2500, 50, 5000, 10000, 25000, 50000, 100000 }
+                : new[] { 500, 2500, 5000, 10000, 200, 25000, 50000, 100000, 250000, 500000 };
+
+            float[] prices = { 1.99f, 4.99f, 9.99f, 19.99f, 0f, 29.99f, 49.99f, 99.99f, 149.99f, 249.99f };
 
             for (int i = 0; i < count; i++)
             {
-                bool isLastInFirstRow = (i == 4); // 5th item is "watch ad"
+                int amount = i < amounts.Length ? amounts[i] : 2500;
+                float price = i < prices.Length ? prices[i] : 19.99f;
+                bool isWatchAd = (i == 4);
+
                 var itemData = CreateDefaultShopItemData(
                     $"{currencyType.ToString().ToLower()}_{i}",
                     $"{currencyType} Pack {i + 1}",
-                    2500,
+                    amount,
                     currencyType,
-                    19.99f,
-                    isLastInFirstRow
+                    price,
+                    isWatchAd
                 );
 
                 var controller = new ShopItemCardController();
@@ -358,14 +409,15 @@ namespace Shop.UI
             CurrencyType currencyType, float price, bool isWatchAd)
         {
             var data = ScriptableObject.CreateInstance<ShopItemData>();
-
             var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+
             typeof(ShopItemData).GetField("itemId", flags)?.SetValue(data, id);
             typeof(ShopItemData).GetField("itemName", flags)?.SetValue(data, name);
             typeof(ShopItemData).GetField("amount", flags)?.SetValue(data, amount);
             typeof(ShopItemData).GetField("currencyType", flags)?.SetValue(data, currencyType);
             typeof(ShopItemData).GetField("price", flags)?.SetValue(data, price);
-            typeof(ShopItemData).GetField("priceFormatted", flags)?.SetValue(data, $"R$ {price:F2}".Replace(".", ","));
+            typeof(ShopItemData).GetField("priceFormatted", flags)?.SetValue(data,
+                isWatchAd ? "FREE" : $"R$ {price:F2}".Replace(".", ","));
             typeof(ShopItemData).GetField("isWatchAd", flags)?.SetValue(data, isWatchAd);
 
             return data;
@@ -376,11 +428,8 @@ namespace Shop.UI
         private void SwitchTab(ShopTabType tab)
         {
             _currentTab = tab;
-
-            // Update tab button styles
             UpdateTabButtonStyles(tab);
 
-            // Show/hide content panels
             SetContentVisibility(_offersContent, tab == ShopTabType.Offers);
             SetContentVisibility(_moneyContent, tab == ShopTabType.Money);
             SetContentVisibility(_coinsContent, tab == ShopTabType.Coins);
@@ -400,24 +449,25 @@ namespace Shop.UI
             if (tabButton == null) return;
 
             if (isActive)
+            {
                 tabButton.AddToClassList("tab-button--active");
+                UIAnimationHelper.ScaleBounce(tabButton, 1.05f, 150f);
+            }
             else
+            {
                 tabButton.RemoveFromClassList("tab-button--active");
+            }
         }
 
         private void SetContentVisibility(VisualElement content, bool visible)
         {
             if (content == null) return;
 
+            content.RemoveFromClassList("shop-tab-content--active");
+
             if (visible)
             {
-                content.RemoveFromClassList("shop-tab-content");
-                content.AddToClassList("shop-tab-content");
                 content.AddToClassList("shop-tab-content--active");
-            }
-            else
-            {
-                content.RemoveFromClassList("shop-tab-content--active");
             }
         }
 
@@ -426,19 +476,51 @@ namespace Shop.UI
         private void OnItemPurchaseClicked(ShopItemData item)
         {
             Debug.Log($"[ShopScreen] Purchase clicked: {item.ItemName} for {item.PriceFormatted}");
-            _shopService.PurchaseItem(item);
+            _confirmationPopup.ShowForItem(item, false);
         }
 
         private void OnOfferPurchaseClicked(OfferItemData offer)
         {
             Debug.Log($"[ShopScreen] Offer purchase clicked: {offer.OfferName} for {offer.PriceFormatted}");
-            _shopService.PurchaseOffer(offer);
+            _confirmationPopup.ShowForOffer(offer);
         }
 
         private void OnWatchAdClicked(ShopItemData item)
         {
             Debug.Log($"[ShopScreen] Watch ad clicked for: {item.ItemName}");
-            _shopService.WatchAdForReward(item);
+            _confirmationPopup.ShowForItem(item, true);
+        }
+
+        private void OnPurchaseConfirmed(PurchaseConfirmedEvent evt)
+        {
+            if (evt.IsOffer && evt.Offer != null)
+            {
+                _shopService.PurchaseOffer(evt.Offer);
+            }
+            else if (evt.Item != null)
+            {
+                if (evt.IsWatchAd)
+                    _shopService.WatchAdForReward(evt.Item);
+                else
+                    _shopService.PurchaseItem(evt.Item);
+            }
+        }
+
+        private void OnPurchaseCompleted(PurchaseCompletedEvent evt)
+        {
+            if (evt.Success)
+            {
+                _purchaseFeedback.ShowSuccess(evt.Message);
+            }
+            else
+            {
+                _purchaseFeedback.ShowError(evt.Message);
+            }
+        }
+
+        private void OnTabSwitchRequested(TabSwitchRequestedEvent evt)
+        {
+            SwitchTab(evt.Tab);
         }
 
         private void OnCloseClicked()
@@ -451,16 +533,15 @@ namespace Shop.UI
         {
             Debug.Log($"[ShopScreen] Navigation arrow clicked on tab: {tab}");
 
-            // Scroll the content to the right
             switch (tab)
             {
                 case ShopTabType.Money:
                     if (_moneyScroll != null)
-                        _moneyScroll.scrollOffset += new Vector2(300, 0);
+                        _moneyScroll.scrollOffset += new Vector2(0, 200);
                     break;
                 case ShopTabType.Coins:
                     if (_coinsScroll != null)
-                        _coinsScroll.scrollOffset += new Vector2(300, 0);
+                        _coinsScroll.scrollOffset += new Vector2(0, 200);
                     break;
             }
         }
