@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Common.Events;
 using Shop.Data;
+using Shop.Events;
 
 namespace Shop.Services
 {
     /// <summary>
     /// Mock implementation of IWalletService for testing purposes.
-    /// Manages in-memory currency balances.
+    /// Manages in-memory currency balances and publishes balance change events
+    /// via both the legacy event and the EventBus.
     /// </summary>
     public class MockWalletService : IWalletService
     {
@@ -40,12 +43,23 @@ namespace Shop.Services
             if (!_balances.ContainsKey(currencyType))
                 _balances[currencyType] = 0;
 
+            int previousBalance = _balances[currencyType];
             _balances[currencyType] += amount;
+            int newBalance = _balances[currencyType];
 
             Debug.Log($"[MockWalletService] Added {amount} {currencyType}. " +
-                      $"New balance: {_balances[currencyType]}");
+                      $"Balance: {previousBalance} -> {newBalance}");
 
-            OnBalanceChanged?.Invoke(currencyType, _balances[currencyType]);
+            // Notify via legacy event
+            OnBalanceChanged?.Invoke(currencyType, newBalance);
+
+            // Notify via EventBus
+            EventBus.Publish(new WalletBalanceChangedEvent
+            {
+                CurrencyType = currencyType,
+                NewBalance = newBalance,
+                PreviousBalance = previousBalance
+            });
         }
 
         public bool TrySpend(CurrencyType currencyType, int amount)
@@ -65,12 +79,22 @@ namespace Shop.Services
                 return false;
             }
 
+            int previousBalance = _balances[currencyType];
             _balances[currencyType] -= amount;
+            int newBalance = _balances[currencyType];
 
             Debug.Log($"[MockWalletService] Spent {amount} {currencyType}. " +
-                      $"New balance: {_balances[currencyType]}");
+                      $"Balance: {previousBalance} -> {newBalance}");
 
-            OnBalanceChanged?.Invoke(currencyType, _balances[currencyType]);
+            OnBalanceChanged?.Invoke(currencyType, newBalance);
+
+            EventBus.Publish(new WalletBalanceChangedEvent
+            {
+                CurrencyType = currencyType,
+                NewBalance = newBalance,
+                PreviousBalance = previousBalance
+            });
+
             return true;
         }
     }

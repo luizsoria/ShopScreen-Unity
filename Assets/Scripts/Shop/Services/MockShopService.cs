@@ -1,11 +1,13 @@
 using UnityEngine;
+using Common.Events;
 using Shop.Data;
+using Shop.Events;
 
 namespace Shop.Services
 {
     /// <summary>
     /// Mock implementation of IShopService for testing purposes.
-    /// All purchases are simulated with Debug.Log messages.
+    /// All purchases are simulated with Debug.Log messages and EventBus notifications.
     /// In a real implementation, this would integrate with platform-specific IAP systems.
     /// </summary>
     public class MockShopService : IShopService
@@ -22,12 +24,22 @@ namespace Shop.Services
             Debug.Log($"[MockShopService] Purchase requested: {item.ItemName} " +
                       $"({item.Amount} {item.CurrencyType}) for {item.PriceFormatted}");
 
-            // Simulate successful purchase
+            // Simulate IAP processing delay would go here in production
+            // For mock, immediately succeed
             _walletService.AddBalance(item.CurrencyType, item.Amount);
 
+            string currencyName = item.CurrencyType == CurrencyType.Money ? "Money" : "Coins";
             Debug.Log($"[MockShopService] Purchase successful! " +
-                      $"Added {item.Amount} {item.CurrencyType} to wallet. " +
-                      $"New balance: {_walletService.GetBalance(item.CurrencyType)}");
+                      $"Added {item.Amount} {item.CurrencyType} to wallet.");
+
+            EventBus.Publish(new PurchaseCompletedEvent
+            {
+                Success = true,
+                ItemName = item.ItemName,
+                Message = $"+{item.Amount:N0} {currencyName}!".Replace(",", "."),
+                CurrencyType = item.CurrencyType,
+                AmountAdded = item.Amount
+            });
 
             return true;
         }
@@ -46,6 +58,16 @@ namespace Shop.Services
             }
 
             Debug.Log($"[MockShopService] Offer purchase successful: {offer.OfferName}");
+
+            EventBus.Publish(new PurchaseCompletedEvent
+            {
+                Success = true,
+                ItemName = offer.OfferName,
+                Message = $"{offer.OfferName} purchased successfully!",
+                CurrencyType = null,
+                AmountAdded = 0
+            });
+
             return true;
         }
 
@@ -57,9 +79,18 @@ namespace Shop.Services
             // Simulate ad watched successfully
             _walletService.AddBalance(item.CurrencyType, item.Amount);
 
+            string currencyName = item.CurrencyType == CurrencyType.Money ? "Money" : "Coins";
             Debug.Log($"[MockShopService] Ad watched! " +
-                      $"Rewarded {item.Amount} {item.CurrencyType}. " +
-                      $"New balance: {_walletService.GetBalance(item.CurrencyType)}");
+                      $"Rewarded {item.Amount} {item.CurrencyType}.");
+
+            EventBus.Publish(new PurchaseCompletedEvent
+            {
+                Success = true,
+                ItemName = item.ItemName,
+                Message = $"Ad reward: +{item.Amount:N0} {currencyName}!".Replace(",", "."),
+                CurrencyType = item.CurrencyType,
+                AmountAdded = item.Amount
+            });
 
             return true;
         }
