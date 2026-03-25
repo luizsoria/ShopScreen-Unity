@@ -273,10 +273,11 @@ namespace Shop.UI
                 var cardRoot = controller.Root;
                 cardRoot.style.opacity = 0f;
                 int delay = index * 100;
-                cardRoot.schedule.Execute(() =>
+                var scheduled = cardRoot.schedule.Execute(() =>
                 {
                     UIAnimationHelper.SlideIn(cardRoot, SlideDirection.Up, 400f);
-                }).ExecuteLater(delay);
+                });
+                scheduled.ExecuteLater(delay);
 
                 _offersScroll.Add(cardRoot);
                 _offerCardControllers.Add(controller);
@@ -306,10 +307,11 @@ namespace Shop.UI
                 var cardRoot = controller.Root;
                 cardRoot.style.opacity = 0f;
                 int delay = index * 150;
-                cardRoot.schedule.Execute(() =>
+                var scheduled = cardRoot.schedule.Execute(() =>
                 {
                     UIAnimationHelper.SlideIn(cardRoot, SlideDirection.Up, 400f);
-                }).ExecuteLater(delay);
+                });
+                scheduled.ExecuteLater(delay);
 
                 _offersScroll.Add(cardRoot);
                 _offerCardControllers.Add(controller);

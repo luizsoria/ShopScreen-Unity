@@ -88,7 +88,8 @@ namespace Shop.UI
             _hideSchedule = _toast.schedule.Execute(() =>
             {
                 UIAnimationHelper.FadeOut(_toast, ANIMATION_DURATION_MS);
-            }).ExecuteLater((long)SHOW_DURATION_MS);
+            });
+            _hideSchedule.ExecuteLater((long)SHOW_DURATION_MS);
 
             Debug.Log($"[PurchaseFeedback] {type}: {message}");
         }

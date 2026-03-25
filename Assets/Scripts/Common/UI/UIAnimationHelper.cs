@@ -26,10 +26,12 @@ namespace Common.UI
                 new System.Collections.Generic.List<StylePropertyName> { new StylePropertyName("opacity") });
 
             // Schedule the opacity change for next frame to trigger transition
-            element.schedule.Execute(() =>
+            // Note: ExecuteLater returns void, so we must call it separately
+            var scheduled = element.schedule.Execute(() =>
             {
                 element.style.opacity = 1f;
-            }).ExecuteLater(16);
+            });
+            scheduled.ExecuteLater(16);
         }
 
         /// <summary>
@@ -46,11 +48,12 @@ namespace Common.UI
 
             element.style.opacity = 0f;
 
-            element.schedule.Execute(() =>
+            var scheduled = element.schedule.Execute(() =>
             {
                 element.style.display = DisplayStyle.None;
                 onComplete?.Invoke();
-            }).ExecuteLater((long)durationMs + 50);
+            });
+            scheduled.ExecuteLater((long)durationMs + 50);
         }
 
         /// <summary>
@@ -67,10 +70,11 @@ namespace Common.UI
 
             element.style.scale = new StyleScale(new Scale(new Vector3(scaleUp, scaleUp, 1f)));
 
-            element.schedule.Execute(() =>
+            var scheduled = element.schedule.Execute(() =>
             {
                 element.style.scale = new StyleScale(new Scale(Vector3.one));
-            }).ExecuteLater((long)durationMs);
+            });
+            scheduled.ExecuteLater((long)durationMs);
         }
 
         /// <summary>
@@ -112,11 +116,12 @@ namespace Common.UI
                     new EasingFunction(EasingMode.EaseOutCubic)
                 });
 
-            element.schedule.Execute(() =>
+            var scheduled = element.schedule.Execute(() =>
             {
                 element.style.translate = new StyleTranslate(new Translate(0, 0));
                 element.style.opacity = 1f;
-            }).ExecuteLater(16);
+            });
+            scheduled.ExecuteLater(16);
         }
 
         /// <summary>
