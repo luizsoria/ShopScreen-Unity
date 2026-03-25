@@ -1,0 +1,62 @@
+/* ============================================
+   PurchaseFeedback.uss - Purchase feedback toast
+   ============================================ */
+
+/* --- Toast Container --- */
+.purchase-feedback {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    translate: -50% 0;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 24px;
+    border-radius: 12px;
+    border-width: 2px;
+    min-width: 280px;
+    max-width: 500px;
+    transition-property: opacity, translate;
+    transition-duration: 300ms;
+    transition-timing-function: ease-out;
+}
+
+/* --- Success State --- */
+.purchase-feedback--success {
+    background-color: rgb(60, 150, 40);
+    border-color: rgb(40, 120, 25);
+}
+
+/* --- Error State --- */
+.purchase-feedback--error {
+    background-color: rgb(200, 60, 40);
+    border-color: rgb(160, 40, 25);
+}
+
+/* --- Icon --- */
+.purchase-feedback__icon {
+    width: 28px;
+    height: 28px;
+    margin-right: 12px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.purchase-feedback__icon--success {
+    /* Checkmark would go here - using tint for now */
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+}
+
+.purchase-feedback__icon--error {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+}
+
+/* --- Message --- */
+.purchase-feedback__message {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+    flex-grow: 1;
+    white-space: normal;
+}

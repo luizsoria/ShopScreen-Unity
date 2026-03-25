@@ -1,0 +1,163 @@
+/* ============================================
+   ConfirmationPopup.uss - Purchase confirmation modal
+   ============================================ */
+
+/* --- Overlay (darkened background) --- */
+.confirmation-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    align-items: center;
+    justify-content: center;
+    transition-property: opacity;
+    transition-duration: 200ms;
+    transition-timing-function: ease-out;
+}
+
+/* --- Popup Container --- */
+.confirmation-popup {
+    width: 420px;
+    background-color: rgb(245, 235, 210);
+    border-radius: 16px;
+    border-width: 3px;
+    border-color: rgb(180, 140, 80);
+    padding: 0;
+    overflow: hidden;
+    transition-property: scale;
+    transition-duration: 200ms;
+    transition-timing-function: ease-out;
+}
+
+/* --- Title --- */
+.confirmation-popup__title {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    padding: 12px 16px;
+    background-color: rgb(80, 130, 60);
+    text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.4);
+    letter-spacing: 1px;
+}
+
+/* --- Separator --- */
+.confirmation-popup__separator {
+    height: 2px;
+    background-color: rgb(200, 180, 140);
+    margin: 0;
+}
+
+/* --- Content Area --- */
+.confirmation-popup__content {
+    flex-direction: row;
+    align-items: center;
+    padding: 20px 24px;
+}
+
+/* --- Icon --- */
+.confirmation-popup__icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+    margin-right: 16px;
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgb(230, 220, 195);
+    border-width: 2px;
+    border-color: rgb(200, 180, 140);
+}
+
+.confirmation-popup__icon--money {
+    background-image: resource("Art/UI/Shop/Icon_HUD_Money");
+}
+
+.confirmation-popup__icon--coins {
+    background-image: resource("Art/UI/Shop/Icon_HUD_Coin");
+}
+
+.confirmation-popup__icon--starpass {
+    background-image: resource("Art/UI/Shop/Frame_StarPass");
+}
+
+.confirmation-popup__icon--starter {
+    background-image: resource("Art/UI/Shop/Frame_StarterPack");
+}
+
+.confirmation-popup__icon--premium {
+    background-image: resource("Art/UI/Shop/Frame_PremiumPack");
+}
+
+/* --- Info Area --- */
+.confirmation-popup__info {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.confirmation-popup__description {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(80, 60, 30);
+    margin-bottom: 6px;
+    white-space: normal;
+}
+
+.confirmation-popup__price {
+    font-size: 22px;
+    -unity-font-style: bold;
+    color: rgb(60, 120, 40);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Buttons Area --- */
+.confirmation-popup__buttons {
+    flex-direction: row;
+    justify-content: center;
+    padding: 0 24px 20px 24px;
+}
+
+.confirmation-popup__button {
+    flex-grow: 1;
+    height: 44px;
+    margin: 0 6px;
+    border-radius: 10px;
+    border-width: 2px;
+    font-size: 16px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    cursor: link;
+    transition-property: scale, background-color;
+    transition-duration: 100ms;
+}
+
+.confirmation-popup__button:hover {
+    scale: 1.03;
+}
+
+.confirmation-popup__button:active {
+    scale: 0.97;
+}
+
+/* Cancel Button */
+.confirmation-popup__button--cancel {
+    background-color: rgb(180, 170, 150);
+    border-color: rgb(150, 140, 120);
+    color: rgb(80, 70, 50);
+}
+
+.confirmation-popup__button--cancel:hover {
+    background-color: rgb(170, 160, 140);
+}
+
+/* Confirm Button */
+.confirmation-popup__button--confirm {
+    background-color: rgb(80, 180, 50);
+    border-color: rgb(60, 140, 30);
+    color: rgb(255, 255, 255);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.confirmation-popup__button--confirm:hover {
+    background-color: rgb(90, 200, 60);
+}
