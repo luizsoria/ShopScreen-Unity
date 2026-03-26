@@ -102,7 +102,7 @@
 }
 
 .offer-card__image--starpass {
-    background-image: resource("Art/UI/Shop/Frame_OffersShopBG");
+    background-image: url("/Assets/Art/UI/Shop/Frame_OffersShopBG.png");
 }
 
 /* Starter/Premium Pack - items list */

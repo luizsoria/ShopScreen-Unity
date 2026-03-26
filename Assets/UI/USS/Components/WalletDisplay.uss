@@ -15,12 +15,12 @@
 }
 
 .wallet-bg-money {
-    background-image: resource("Art/UI/Shop/Frame_MoneyWallet");
+    background-image: url("/Assets/Art/UI/Shop/Frame_MoneyWallet.png");
     -unity-background-scale-mode: stretch-to-fill;
 }
 
 .wallet-bg-coins {
-    background-image: resource("Art/UI/Shop/Frame_CoinWallet");
+    background-image: url("/Assets/Art/UI/Shop/Frame_CoinWallet.png");
     -unity-background-scale-mode: stretch-to-fill;
 }
 
@@ -32,11 +32,11 @@
 }
 
 .wallet-icon-money {
-    background-image: resource("Art/UI/Shop/Icon_HUD_Money");
+    background-image: url("/Assets/Art/UI/Shop/Icon_HUD_Money.png");
 }
 
 .wallet-icon-coins {
-    background-image: resource("Art/UI/Shop/Icon_HUD_Coin");
+    background-image: url("/Assets/Art/UI/Shop/Icon_HUD_Coin.png");
 }
 
 .wallet-amount {

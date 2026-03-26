@@ -70,23 +70,23 @@
 }
 
 .confirmation-popup__icon--money {
-    background-image: resource("Art/UI/Shop/Icon_HUD_Money");
+    background-image: url("/Assets/Art/UI/Shop/Icon_HUD_Money.png");
 }
 
 .confirmation-popup__icon--coins {
-    background-image: resource("Art/UI/Shop/Icon_HUD_Coin");
+    background-image: url("/Assets/Art/UI/Shop/Icon_HUD_Coin.png");
 }
 
 .confirmation-popup__icon--starpass {
-    background-image: resource("Art/UI/Shop/Frame_StarPass");
+    background-image: url("/Assets/Art/UI/Shop/Frame_StarPass.png");
 }
 
 .confirmation-popup__icon--starter {
-    background-image: resource("Art/UI/Shop/Frame_StarterPack");
+    background-image: url("/Assets/Art/UI/Shop/Frame_StarterPack.png");
 }
 
 .confirmation-popup__icon--premium {
-    background-image: resource("Art/UI/Shop/Frame_PremiumPack");
+    background-image: url("/Assets/Art/UI/Shop/Frame_PremiumPack.png");
 }
 
 /* --- Info Area --- */

@@ -37,12 +37,12 @@
 }
 
 .shop-item-card__image--money {
-    background-image: resource("Art/UI/Shop/Frame_ShopMoney");
+    background-image: url("/Assets/Art/UI/Shop/Frame_ShopMoney.png");
     -unity-background-scale-mode: stretch-to-fill;
 }
 
 .shop-item-card__image--coins {
-    background-image: resource("Art/UI/Shop/Frame_ShopCoins");
+    background-image: url("/Assets/Art/UI/Shop/Frame_ShopCoins.png");
     -unity-background-scale-mode: stretch-to-fill;
 }
 
@@ -74,11 +74,11 @@
 }
 
 .shop-item-card__currency-icon--money {
-    background-image: resource("Art/UI/Shop/Icon_HUD_Money");
+    background-image: url("/Assets/Art/UI/Shop/Icon_HUD_Money.png");
 }
 
 .shop-item-card__currency-icon--coins {
-    background-image: resource("Art/UI/Shop/Icon_HUD_Coin");
+    background-image: url("/Assets/Art/UI/Shop/Icon_HUD_Coin.png");
 }
 
 .shop-item-card__amount-text {
